@@ -340,7 +340,7 @@ DB_USER=root
 DB_PASSWORD=sua senha
 DB_DATABASE=treinamento
 ```
-## Implementação da função de autenticação
+## :dash: Implementação da função de autenticação
 Dentro da pasta /src/auth vamos criar 2 arquivos: um com a função de realizar o login do usuário e outra para verificar se a TOKEN de autenticação é valida ou não:
 
 Primeiro arquivo será o login.js:
