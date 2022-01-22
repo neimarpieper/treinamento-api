@@ -101,12 +101,13 @@ o Conteúdo do index.js deve ser:
 
 Podemos ver que logo no inicio tem a declaração de diversas variáveis recebendo como valor a importação de algum pacote. A importação se dá da seguinte forma:  A lista de todos os pacotes que serão utilizados no exemplo está na tag "dependencies": {} do arquivo package.json abaixo.
 
-
-const variavelTeste = require('nome-pacote');
+```
+  const variavelTeste = require('nome-pacote');
+```
 Controlador de dependências package.json
 Substitua o arquivo package.json pelo seguinte: 
 
-
+```
 {
   "name": "api",
   "version": "1.0.0",
@@ -130,6 +131,7 @@ Substitua o arquivo package.json pelo seguinte:
     "validate.js": "^0.13.1"
   }
 }
+```
 Lista de dependências da API
 Para instalarmos um pacote manualmente, podemos utilizar os seguintes comandos:
 
@@ -137,28 +139,29 @@ Para instalarmos um pacote manualmente, podemos utilizar os seguintes comandos:
 yarn add express
 ou
 
-
-npm i --save express
+```
+  npm i --save express
+```
 Explicação da finalidade de alguns dos pacotes citados:
+```
+  body-parser -> quando enviamos uma requisição com dados no body, o servidor precisa pegar esses dados em forma de objetos. Para isso esse pacote transforma o data do request em Object.
 
-body-parser -> quando enviamos uma requisição com dados no body, o servidor precisa pegar esses dados em forma de objetos. Para isso esse pacote transforma o data do request em Object.
+  consign -> esse pacote é responsável por ler todos os arquivos dentro de /src e injeta-los dentro da variável global app. Assim todas as funções podem ser acessadas de outros arquivos apenas chamando “app.arquivo.funcao-do-arquivo“
 
-consign -> esse pacote é responsável por ler todos os arquivos dentro de /src e injeta-los dentro da variável global app. Assim todas as funções podem ser acessadas de outros arquivos apenas chamando “app.arquivo.funcao-do-arquivo“
+  dotenv -> Responsável por ler o arquivo oculto ".env" presente na raiz do projeto.
 
-dotenv -> Responsável por ler o arquivo oculto ".env" presente na raiz do projeto.
+  express → pacote responsável por servir rotas em uma porta em forma de serviço HTTP
 
-express → pacote responsável por servir rotas em uma porta em forma de serviço HTTP
+  jsonwebtoken -> pacote responsável por gerar uma token com dados do usuário contendo um prazo de validação para uso. O mesmo também consegue validar se a token está expirada ou nao.
 
-jsonwebtoken -> pacote responsável por gerar uma token com dados do usuário contendo um prazo de validação para uso. O mesmo também consegue validar se a token está expirada ou nao.
+  knex -> Responsável por realizar a conexão com o banco de dados de forma amigavel, também conhecido como queryBuilder.
 
-knex -> Responsável por realizar a conexão com o banco de dados de forma amigavel, também conhecido como queryBuilder.
+  mysql -> Lib utilizada pelo knex para se conectar ao banco mysql ou mariadb.
 
-mysql -> Lib utilizada pelo knex para se conectar ao banco mysql ou mariadb.
+  nodemon -> Monitora sempre que alteramos um arquivo e faz um reload automatico no projeto.
 
-nodemon -> Monitora sempre que alteramos um arquivo e faz um reload automatico no projeto.
-
-validate.js -> Responsável por comparar um objeto com uma validação de preenchimento e tipagem de dados afim de verificar se as informações enviadas na requisição estão corretas.
-
+  validate.js -> Responsável por comparar um objeto com uma validação de preenchimento e tipagem de dados afim de verificar se as informações enviadas na requisição estão corretas.
+```
 
 
 
