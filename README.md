@@ -37,7 +37,7 @@ Pronto com o repositório iniciado um arquivo chamado package.json será criado.
 Estrutura de pastas do projeto
 O exemplo demonstrado possui a seguinte estrutura de pastas:
 
-
+```
 /src
   /auth
   /config
@@ -46,18 +46,16 @@ O exemplo demonstrado possui a seguinte estrutura de pastas:
 index.js
 package.json
 .env
+```
+
 Onde:
-
-/src é a pasta raiz que contem todo o código fonte macro.
-
-/src/auth é a pasta que contem os controles de acesso como login e verificação de token.
-
-/src/config é a pasta reservada para conter arquivos de configuração como a configuração de acesso ao banco de dados por exemplo.
-
-/src/controller é a pasta que conterá os arquivos com as funções de crud do nosso projeto
-
-/src/router local onde criaremos os arquivos de configuração de rotas.
-
+```
+  /src é a pasta raiz que contem todo o código fonte macro.
+  /src/auth é a pasta que contem os controles de acesso como login e verificação de token.
+  /src/config é a pasta reservada para conter arquivos de configuração como a configuração de acesso ao banco de dados por exemplo.
+  /src/controller é a pasta que conterá os arquivos com as funções de crud do nosso projeto
+  /src/router local onde criaremos os arquivos de configuração de rotas.
+```
 OBS: A estrutura de pastas deverá ser criada manualmente. Inclusive os arquivos index.js e .env.
 
 Ao final do projeto teremos uma pasta como na imagem:
@@ -68,38 +66,38 @@ O Arquivo index.js na raiz do projeto ao lado de package.json é o ponto de part
 
 o Conteúdo do index.js deve ser:
 
+```
+  // Importação de pacotes
+  require('dotenv').config()
+  const express = require('express')
+  const cors = require('cors')
+  const bodyParser = require('body-parser')
+  const consign = require('consign')
+  const knex = require('knex')
+  const config = require('./src/config/db')
 
-// Importação de pacotes
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const consign = require('consign')
-const knex = require('knex')
-const config = require('./src/config/db')
+  // instanciação da varíavel global app
+  const app  = express()
 
-// instanciação da varíavel global app
-const app  = express()
+  app.use(cors())
+  app.use(bodyParser.json())
 
-app.use(cors())
-app.use(bodyParser.json())
+  // Carregamento da configuração do banco de dados
+  const database = knex(config)
+  app.db = database
 
-// Carregamento da configuração do banco de dados
-const database = knex(config)
-app.db = database
+  // Carregamento dos arquivos para a variavel global app.
+  consign()
+  .include('./src/controller')
+  .include('./src/auth')
+  .include('./src/router')
+  .into(app)
 
-// Carregamento dos arquivos para a variavel global app.
-consign()
-.include('./src/controller')
-.include('./src/auth')
-.include('./src/router')
-.into(app)
-
-// Inicialização do serviço
-app.listen(process.env.APP_PORT, () => {
-  console.log(`Rodando na porta ${process.env.APP_PORT}`)
-})
- 
+  // Inicialização do serviço
+  app.listen(process.env.APP_PORT, () => {
+    console.log(`Rodando na porta ${process.env.APP_PORT}`)
+  })
+```
 
 Podemos ver que logo no inicio tem a declaração de diversas variáveis recebendo como valor a importação de algum pacote. A importação se dá da seguinte forma:  A lista de todos os pacotes que serão utilizados no exemplo está na tag "dependencies": {} do arquivo package.json abaixo.
 
