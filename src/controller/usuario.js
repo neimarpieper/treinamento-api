@@ -6,9 +6,9 @@ module.exports = app => {
 
 // variavel com a validação de campos obrigatórios para salvar
   const validateSalvar = {
-    descricao: { presence: true, type: 'string' },
-    quantidade: { presence: true, type: 'number' },
-    valor: { presence: true, type: 'number' }
+    nome: { presence: true, type: 'string' },
+    senha: { presence: true, type: 'string' },
+    email: { presence: true, type: 'string' }
   }
 
 // variavel com a validação de campos obrigatórios para editar
@@ -20,11 +20,11 @@ module.exports = app => {
   // Função listar é asincrona e recebe request e retorna uma responsse
   const listar = async (req, res) => {
     try {
-      // Constante que obtem a lista de produtos no banco
+      // Constante que obtem a lista de usuarios no banco
       // app.db é a variavel de conexao com o banco de dados configurado no index.js
-      const resp = await app.db('produto').select()
+      const resp = await app.db('usuario').select()
 
-      // retornoda função listar retorna a variavel resp com a lista de produtos do banco de dados
+      // retornoda função listar retorna a variavel resp com a lista de usuarios do banco de dados
       return res.json(resp)
     } catch (error) {
       // caso ocorrer algum erro, uma menssagem de erro será retornada
@@ -36,7 +36,7 @@ module.exports = app => {
   const exibir = async (req, res) => {
     try {
       // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
-      const resp = await app.db('produto')
+      const resp = await app.db('usuario')
       .where({
         id: req.params.id
       })
@@ -59,21 +59,21 @@ module.exports = app => {
       if (err) return res.json(err)
 
       // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
-      const findOne = await app.db('produto')
+      const findOne = await app.db('usuario')
       .where({
         id: req.body.id
       })
-      if (!findOne.length) throw new Error('Produto não encontrado')
+      if (!findOne.length) throw new Error('Usuario não encontrado')
 
       // Caso exista então aplica um update para atualizar as informações
-      await app.db('produto')
+      await app.db('usuario')
         .where({
           id: req.body.id
         })
         .update({
-          descricao: req.body.descricao,
-          quantidade: req.body.quantidade,
-          valor: req.body.valor
+          nome: req.body.nome,
+          senha: req.body.senha,
+          email: req.body.email
         })
 
       return res.json({ message: 'Alterado' })
@@ -87,11 +87,11 @@ module.exports = app => {
       const err = validate(req.body, validateSalvar)
       if (err) return res.json(err)
 
-      await app.db('produto')
+      await app.db('usuario')
         .insert({
-          descricao: req.body.descricao,
-          quantidade: req.body.quantidade,
-          valor: req.body.valor
+          nome: req.body.nome,
+          senha: req.body.senha,
+          email: req.body.email
         })
 
       return res.json({ message: 'Inserido' })
@@ -102,13 +102,13 @@ module.exports = app => {
 
   const deletar = async (req, res) => {
     try {
-      const findOne = await app.db('produto')
+      const findOne = await app.db('usuario')
         .where({
           id: req.body.id
         })
-        if (!findOne.length) throw new Error('Produto não encontrado')
+        if (!findOne.length) throw new Error('Usuario não encontrado')
 
-      await app.db('produto')
+      await app.db('usuario')
         .where({
           id: req.params.id
         })
