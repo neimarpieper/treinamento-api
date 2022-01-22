@@ -163,187 +163,157 @@ Explicação da finalidade de alguns dos pacotes citados:
   validate.js -> Responsável por comparar um objeto com uma validação de preenchimento e tipagem de dados afim de verificar se as informações enviadas na requisição estão corretas.
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 Lista de pacotes:
 
-npm: body-parser 
-https://www.npmjs.com/package/body-parser
+- [npm: body-parser](https://www.npmjs.com/package/body-parser/)
+- [npm: consign](https://www.npmjs.com/package/consign/)
+- [npm: cors](https://www.npmjs.com/package/cors/)
+- [npm: dotenv ](https://www.npmjs.com/package/dotenv/)
+- [Express - framework de aplicativo da web Node.js ](https://expressjs.com/pt-br/)
+- [npm: jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken/)
+- [Knex.js - A SQL Query Builder for Javascript](https://knexjs.org/)
+- [npm: mysql](https://www.npmjs.com/package/mysql/)
+- [npm: nodemon](https://www.npmjs.com/package/nodemon/)
+- [validate.js](https://validatejs.org/)
 
-npm: consign 
-https://www.npmjs.com/package/consign
-
-npm: cors 
-https://www.npmjs.com/package/cors
-
-npm: dotenv 
-https://www.npmjs.com/package/dotenv
-
-Express - framework de aplicativo da web Node.js 
-https://expressjs.com/pt-br/
-
-npm: jsonwebtoken 
-https://www.npmjs.com/package/jsonwebtoken
-
-Knex.js - A SQL Query Builder for Javascript 
-https://knexjs.org/
-
-npm: mysql 
-https://www.npmjs.com/package/mysql
-
-npm: nodemon 
-https://www.npmjs.com/package/nodemon
-
-validate.js 
-https://validatejs.org/
- 
  
 <h1 align="center">Implementação do controller</h1>
 Na pasta /src/controller criar um arquivo chamado produto.js uma vez que será desenvolvido um cadastro de produto como exemplo:
 
-// Importamos o pacote validate.js para validar campos obrigatórios de preenchimento
-const validate = require('validate.js')
+```
+  // Importamos o pacote validate.js para validar campos obrigatórios de preenchimento
+  const validate = require('validate.js')
 
-// exportamos o módulo recebendo como parâmetro a variavel global app
-module.exports = app => {
+  // exportamos o módulo recebendo como parâmetro a variavel global app
+  module.exports = app => {
 
-// variavel com a validação de campos obrigatórios para salvar
-  const validateSalvar = {
-    descricao: { presence: true, type: 'string' },
-    quantidade: { presence: true, type: 'number' },
-    valor: { presence: true, type: 'number' }
-  }
-
-// variavel com a validação de campos obrigatórios para editar
-  const validateEditar = {
-    id: { presence: true, type: 'integer' },
-    ...validateSalvar
-  }
-
-  // Função listar é asincrona e recebe request e retorna uma responsse
-  const listar = async (req, res) => {
-    try {
-      // Constante que obtem a lista de produtos no banco
-      // app.db é a variavel de conexao com o banco de dados configurado no index.js
-      const resp = await app.db('produto').select()
-
-      // retornoda função listar retorna a variavel resp com a lista de produtos do banco de dados
-      return res.json(resp)
-    } catch (error) {
-      // caso ocorrer algum erro, uma menssagem de erro será retornada
-      return res.json({ erro: error.message })
+  // variavel com a validação de campos obrigatórios para salvar
+    const validateSalvar = {
+      descricao: { presence: true, type: 'string' },
+      quantidade: { presence: true, type: 'number' },
+      valor: { presence: true, type: 'number' }
     }
-  }
 
-  // Função exibir é assincrona e recebe a requisição e retorna uma resposta
-  const exibir = async (req, res) => {
-    try {
-      // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
-      const resp = await app.db('produto')
-      .where({
-        id: req.params.id
-      })
-      .select()
-
-      // Retorna o primeiro resultado encontrado.
-      return res.json(resp[0])
-    } catch (error) {
-      // Caso ocorra alguma falha, retorna um erro
-      return res.json({ erro: error.message })
+  // variavel com a validação de campos obrigatórios para editar
+    const validateEditar = {
+      id: { presence: true, type: 'integer' },
+      ...validateSalvar
     }
-  }
 
-  // Função editar
-  const editar = async (req, res) => {
-    try {
-      // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
-      const err = validate(req.body, validateEditar)
-      // Caso não retorna uma menssagem de erro
-      if (err) return res.json(err)
+    // Função listar é asincrona e recebe request e retorna uma responsse
+    const listar = async (req, res) => {
+      try {
+        // Constante que obtem a lista de produtos no banco
+        // app.db é a variavel de conexao com o banco de dados configurado no index.js
+        const resp = await app.db('produto').select()
 
-      // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
-      const findOne = await app.db('produto')
-      .where({
-        id: req.body.id
-      })
-      if (!findOne.length) throw new Error('Produto não encontrado')
+        // retornoda função listar retorna a variavel resp com a lista de produtos do banco de dados
+        return res.json(resp)
+      } catch (error) {
+        // caso ocorrer algum erro, uma menssagem de erro será retornada
+        return res.json({ erro: error.message })
+      }
+    }
 
-      // Caso exista então aplica um update para atualizar as informações
-      await app.db('produto')
+    // Função exibir é assincrona e recebe a requisição e retorna uma resposta
+    const exibir = async (req, res) => {
+      try {
+        // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
+        const resp = await app.db('produto')
         .where({
-          id: req.body.id
+          id: req.params.id
         })
-        .update({
-          descricao: req.body.descricao,
-          quantidade: req.body.quantidade,
-          valor: req.body.valor
-        })
+        .select()
 
-      return res.json({ message: 'Alterado' })
-    } catch (error) {
-      return res.json({ erro: error.message })
+        // Retorna o primeiro resultado encontrado.
+        return res.json(resp[0])
+      } catch (error) {
+        // Caso ocorra alguma falha, retorna um erro
+        return res.json({ erro: error.message })
+      }
     }
-  }
 
-  const salvar = async (req, res) => {
-    try {
-      const err = validate(req.body, validateSalvar)
-      if (err) return res.json(err)
-      
-      await app.db('produto')
-        .insert({
-          descricao: req.body.descricao,
-          quantidade: req.body.quantidade,
-          valor: req.body.valor
-        })
-  
-      return res.json({ message: 'Inserido' })
-    } catch (error) {
-      return res.json({ erro: error.message })
-    }
-  }
+    // Função editar
+    const editar = async (req, res) => {
+      try {
+        // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
+        const err = validate(req.body, validateEditar)
+        // Caso não retorna uma menssagem de erro
+        if (err) return res.json(err)
 
-  const deletar = async (req, res) => {
-    try {
-      const findOne = await app.db('produto')
+        // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
+        const findOne = await app.db('produto')
         .where({
           id: req.body.id
         })
         if (!findOne.length) throw new Error('Produto não encontrado')
 
-      await app.db('produto')
-        .where({
-          id: req.params.id
-        })
-        .del()
+        // Caso exista então aplica um update para atualizar as informações
+        await app.db('produto')
+          .where({
+            id: req.body.id
+          })
+          .update({
+            descricao: req.body.descricao,
+            quantidade: req.body.quantidade,
+            valor: req.body.valor
+          })
 
-      return res.json({ message: 'Deletado' })
+        return res.json({ message: 'Alterado' })
+      } catch (error) {
+        return res.json({ erro: error.message })
+      }
+    }
 
-    } catch (error) {
-      return res.json({ erro: error.message })
+    const salvar = async (req, res) => {
+      try {
+        const err = validate(req.body, validateSalvar)
+        if (err) return res.json(err)
+
+        await app.db('produto')
+          .insert({
+            descricao: req.body.descricao,
+            quantidade: req.body.quantidade,
+            valor: req.body.valor
+          })
+
+        return res.json({ message: 'Inserido' })
+      } catch (error) {
+        return res.json({ erro: error.message })
+      }
+    }
+
+    const deletar = async (req, res) => {
+      try {
+        const findOne = await app.db('produto')
+          .where({
+            id: req.body.id
+          })
+          if (!findOne.length) throw new Error('Produto não encontrado')
+
+        await app.db('produto')
+          .where({
+            id: req.params.id
+          })
+          .del()
+
+        return res.json({ message: 'Deletado' })
+
+      } catch (error) {
+        return res.json({ erro: error.message })
+      }
+    }
+
+    // Para ser acessadas de outros arquivos todas as funçoes devem ser exportadas.
+    return {
+      listar,
+      exibir,
+      editar,
+      salvar,
+      deletar
     }
   }
-
-  // Para ser acessadas de outros arquivos todas as funçoes devem ser exportadas.
-  return {
-    listar,
-    exibir,
-    editar,
-    salvar,
-    deletar
-  }
-}
-
+```
 
 
 
