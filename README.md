@@ -59,9 +59,10 @@ Onde:
 OBS: A estrutura de pastas deverá ser criada manualmente. Inclusive os arquivos index.js e .env.
 
 Ao final do projeto teremos uma pasta como na imagem:
+![image](https://user-images.githubusercontent.com/22473595/150638091-0c3e8d49-0577-4c9d-b7fd-b5008e3f0c4f.png)
 
 
-Arquivo principal do projeto index.js
+## Arquivo principal do projeto index.js
 O Arquivo index.js na raiz do projeto ao lado de package.json é o ponto de partida para a nossa aplicação. Ele é o responsável por carregar todos os arquivos do projeto e servi-lo em uma porta para ser acessado por requisições.
 
 o Conteúdo do index.js deve ser:
@@ -104,7 +105,8 @@ Podemos ver que logo no inicio tem a declaração de diversas variáveis receben
 ```
   const variavelTeste = require('nome-pacote');
 ```
-Controlador de dependências package.json
+
+## Controlador de dependências package.json
 Substitua o arquivo package.json pelo seguinte: 
 
 ```javascript
@@ -132,38 +134,36 @@ Substitua o arquivo package.json pelo seguinte:
   }
 }
 ```
-Lista de dependências da API
+
+## Lista de dependências da API
 Para instalarmos um pacote manualmente, podemos utilizar os seguintes comandos:
-
-
+```
 yarn add express
 ou
-
+npm i --save express
 ```
-  npm i --save express
+### Explicação da finalidade de alguns dos pacotes citados:
 ```
-Explicação da finalidade de alguns dos pacotes citados:
-```
-  body-parser -> quando enviamos uma requisição com dados no body, o servidor precisa pegar esses dados em forma de objetos. Para isso esse pacote transforma o data do request em Object.
+body-parser -> quando enviamos uma requisição com dados no body, o servidor precisa pegar esses dados em forma de objetos. Para isso esse pacote transforma o data do request em Object.
 
-  consign -> esse pacote é responsável por ler todos os arquivos dentro de /src e injeta-los dentro da variável global app. Assim todas as funções podem ser acessadas de outros arquivos apenas chamando “app.arquivo.funcao-do-arquivo“
+consign -> esse pacote é responsável por ler todos os arquivos dentro de /src e injeta-los dentro da variável global app. Assim todas as funções podem ser acessadas de outros arquivos apenas chamando “app.arquivo.funcao-do-arquivo“
 
-  dotenv -> Responsável por ler o arquivo oculto ".env" presente na raiz do projeto.
+dotenv -> Responsável por ler o arquivo oculto ".env" presente na raiz do projeto.
 
-  express → pacote responsável por servir rotas em uma porta em forma de serviço HTTP
+express → pacote responsável por servir rotas em uma porta em forma de serviço HTTP
 
-  jsonwebtoken -> pacote responsável por gerar uma token com dados do usuário contendo um prazo de validação para uso. O mesmo também consegue validar se a token está expirada ou nao.
+jsonwebtoken -> pacote responsável por gerar uma token com dados do usuário contendo um prazo de validação para uso. O mesmo também consegue validar se a token está expirada ou nao.
 
-  knex -> Responsável por realizar a conexão com o banco de dados de forma amigavel, também conhecido como queryBuilder.
+knex -> Responsável por realizar a conexão com o banco de dados de forma amigavel, também conhecido como queryBuilder.
 
-  mysql -> Lib utilizada pelo knex para se conectar ao banco mysql ou mariadb.
+mysql -> Lib utilizada pelo knex para se conectar ao banco mysql ou mariadb.
 
-  nodemon -> Monitora sempre que alteramos um arquivo e faz um reload automatico no projeto.
+nodemon -> Monitora sempre que alteramos um arquivo e faz um reload automatico no projeto.
 
-  validate.js -> Responsável por comparar um objeto com uma validação de preenchimento e tipagem de dados afim de verificar se as informações enviadas na requisição estão corretas.
+validate.js -> Responsável por comparar um objeto com uma validação de preenchimento e tipagem de dados afim de verificar se as informações enviadas na requisição estão corretas.
 ```
 
-Lista de pacotes:
+### Lista de pacotes:
 
 - [npm: body-parser](https://www.npmjs.com/package/body-parser/)
 - [npm: consign](https://www.npmjs.com/package/consign/)
@@ -181,142 +181,142 @@ Lista de pacotes:
 Na pasta /src/controller criar um arquivo chamado produto.js uma vez que será desenvolvido um cadastro de produto como exemplo:
 
 ```javascript
-  // Importamos o pacote validate.js para validar campos obrigatórios de preenchimento
-  const validate = require('validate.js')
+// Importamos o pacote validate.js para validar campos obrigatórios de preenchimento
+const validate = require('validate.js')
 
-  // exportamos o módulo recebendo como parâmetro a variavel global app
-  module.exports = app => {
+// exportamos o módulo recebendo como parâmetro a variavel global app
+module.exports = app => {
 
-  // variavel com a validação de campos obrigatórios para salvar
-    const validateSalvar = {
-      descricao: { presence: true, type: 'string' },
-      quantidade: { presence: true, type: 'number' },
-      valor: { presence: true, type: 'number' }
+// variavel com a validação de campos obrigatórios para salvar
+  const validateSalvar = {
+    descricao: { presence: true, type: 'string' },
+    quantidade: { presence: true, type: 'number' },
+    valor: { presence: true, type: 'number' }
+  }
+
+// variavel com a validação de campos obrigatórios para editar
+  const validateEditar = {
+    id: { presence: true, type: 'integer' },
+    ...validateSalvar
+  }
+
+  // Função listar é asincrona e recebe request e retorna uma responsse
+  const listar = async (req, res) => {
+    try {
+      // Constante que obtem a lista de produtos no banco
+      // app.db é a variavel de conexao com o banco de dados configurado no index.js
+      const resp = await app.db('produto').select()
+
+      // retornoda função listar retorna a variavel resp com a lista de produtos do banco de dados
+      return res.json(resp)
+    } catch (error) {
+      // caso ocorrer algum erro, uma menssagem de erro será retornada
+      return res.json({ erro: error.message })
     }
+  }
 
-  // variavel com a validação de campos obrigatórios para editar
-    const validateEditar = {
-      id: { presence: true, type: 'integer' },
-      ...validateSalvar
+  // Função exibir é assincrona e recebe a requisição e retorna uma resposta
+  const exibir = async (req, res) => {
+    try {
+      // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
+      const resp = await app.db('produto')
+      .where({
+        id: req.params.id
+      })
+      .select()
+
+      // Retorna o primeiro resultado encontrado.
+      return res.json(resp[0])
+    } catch (error) {
+      // Caso ocorra alguma falha, retorna um erro
+      return res.json({ erro: error.message })
     }
+  }
 
-    // Função listar é asincrona e recebe request e retorna uma responsse
-    const listar = async (req, res) => {
-      try {
-        // Constante que obtem a lista de produtos no banco
-        // app.db é a variavel de conexao com o banco de dados configurado no index.js
-        const resp = await app.db('produto').select()
+  // Função editar
+  const editar = async (req, res) => {
+    try {
+      // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
+      const err = validate(req.body, validateEditar)
+      // Caso não retorna uma menssagem de erro
+      if (err) return res.json(err)
 
-        // retornoda função listar retorna a variavel resp com a lista de produtos do banco de dados
-        return res.json(resp)
-      } catch (error) {
-        // caso ocorrer algum erro, uma menssagem de erro será retornada
-        return res.json({ erro: error.message })
-      }
-    }
+      // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
+      const findOne = await app.db('produto')
+      .where({
+        id: req.body.id
+      })
+      if (!findOne.length) throw new Error('Produto não encontrado')
 
-    // Função exibir é assincrona e recebe a requisição e retorna uma resposta
-    const exibir = async (req, res) => {
-      try {
-        // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
-        const resp = await app.db('produto')
+      // Caso exista então aplica um update para atualizar as informações
+      await app.db('produto')
         .where({
-          id: req.params.id
+          id: req.body.id
         })
-        .select()
+        .update({
+          descricao: req.body.descricao,
+          quantidade: req.body.quantidade,
+          valor: req.body.valor
+        })
 
-        // Retorna o primeiro resultado encontrado.
-        return res.json(resp[0])
-      } catch (error) {
-        // Caso ocorra alguma falha, retorna um erro
-        return res.json({ erro: error.message })
-      }
+      return res.json({ message: 'Alterado' })
+    } catch (error) {
+      return res.json({ erro: error.message })
     }
+  }
 
-    // Função editar
-    const editar = async (req, res) => {
-      try {
-        // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
-        const err = validate(req.body, validateEditar)
-        // Caso não retorna uma menssagem de erro
-        if (err) return res.json(err)
+  const salvar = async (req, res) => {
+    try {
+      const err = validate(req.body, validateSalvar)
+      if (err) return res.json(err)
 
-        // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
-        const findOne = await app.db('produto')
+      await app.db('produto')
+        .insert({
+          descricao: req.body.descricao,
+          quantidade: req.body.quantidade,
+          valor: req.body.valor
+        })
+
+      return res.json({ message: 'Inserido' })
+    } catch (error) {
+      return res.json({ erro: error.message })
+    }
+  }
+
+  const deletar = async (req, res) => {
+    try {
+      const findOne = await app.db('produto')
         .where({
           id: req.body.id
         })
         if (!findOne.length) throw new Error('Produto não encontrado')
 
-        // Caso exista então aplica um update para atualizar as informações
-        await app.db('produto')
-          .where({
-            id: req.body.id
-          })
-          .update({
-            descricao: req.body.descricao,
-            quantidade: req.body.quantidade,
-            valor: req.body.valor
-          })
+      await app.db('produto')
+        .where({
+          id: req.params.id
+        })
+        .del()
 
-        return res.json({ message: 'Alterado' })
-      } catch (error) {
-        return res.json({ erro: error.message })
-      }
-    }
+      return res.json({ message: 'Deletado' })
 
-    const salvar = async (req, res) => {
-      try {
-        const err = validate(req.body, validateSalvar)
-        if (err) return res.json(err)
-
-        await app.db('produto')
-          .insert({
-            descricao: req.body.descricao,
-            quantidade: req.body.quantidade,
-            valor: req.body.valor
-          })
-
-        return res.json({ message: 'Inserido' })
-      } catch (error) {
-        return res.json({ erro: error.message })
-      }
-    }
-
-    const deletar = async (req, res) => {
-      try {
-        const findOne = await app.db('produto')
-          .where({
-            id: req.body.id
-          })
-          if (!findOne.length) throw new Error('Produto não encontrado')
-
-        await app.db('produto')
-          .where({
-            id: req.params.id
-          })
-          .del()
-
-        return res.json({ message: 'Deletado' })
-
-      } catch (error) {
-        return res.json({ erro: error.message })
-      }
-    }
-
-    // Para ser acessadas de outros arquivos todas as funçoes devem ser exportadas.
-    return {
-      listar,
-      exibir,
-      editar,
-      salvar,
-      deletar
+    } catch (error) {
+      return res.json({ erro: error.message })
     }
   }
+
+  // Para ser acessadas de outros arquivos todas as funçoes devem ser exportadas.
+  return {
+    listar,
+    exibir,
+    editar,
+    salvar,
+    deletar
+  }
+}
 ```
 ## 🚀 Configuração do banco de dados
 Dentro da pasta /src/config vamos criar um arquivo chamado db.js:
-```
+```javascript
 module.exports = {
   client: process.env.DB_CLIENT,
   connection: {
@@ -329,7 +329,7 @@ module.exports = {
 }
 ```
 Esse arquivo contêm as informações necessárias para a variavelapp.db acessar o banco de dados pelo comando: app.db('nome-tabela'). Vejamos que as informações vem de um process.env, isso mesmo, o arquivo ".env" presente ao lado do arquivo index.js mencionado na estrutura de pastas e também presente no print é um arquivo oculto que contem as informações secretas como chave secreta, usuário e senha do banco de dados. Veja o arquivo .env:
-```
+```javascript
 APP_KEY=secret
 APP_PORT=5000
 
@@ -344,7 +344,7 @@ DB_DATABASE=treinamento
 Dentro da pasta /src/auth vamos criar 2 arquivos: um com a função de realizar o login do usuário e outra para verificar se a TOKEN de autenticação é valida ou não:
 
 Primeiro arquivo será o login.js:
-```
+```javascript
 var jwt = require('jsonwebtoken'); // Importação do pacote jsonwebtoken
 const validate = require('validate.js') // Importação do pacote validate.js
 
@@ -400,7 +400,7 @@ module.exports = app => {
 }
 ```
 Segundo arquivo da pasta /src/auth será verifyToken.js: 
-```
+```javascript
 // Importa o pacote jsonwebtoken
 const jwt = require('jsonwebtoken');
 
@@ -432,7 +432,7 @@ module.exports = app => {
 ## Implementação de rotas
 Na pasta /src/router deve ser criado um arquivo chamado index.js. É esse arquivo que fará o relacionamento entre as funções que foram criadas em /src/controller/produtos.js e tornará eles acessíveis por requisições http como por exemplo: http://localhost:5000/produtos
 
-```
+```javascript
 const jwt = require('jsonwebtoken');
 
 module.exports = app => {
@@ -459,7 +459,7 @@ module.exports = app => {
 Por ultimo antes de testar devemos criar o banco de dados com o seguinte script sql: Para isso certifique-se de ter instalado o MariaDb no computador e possuir o usuário e senha do banco de dados.
 
 Certifique-se ainda de ter substituído as configurações de acesso ao banco de dados no arquivo .env sem o mesmo o backend não conseguirá manipular os dados.
-```
+```javascript
 CREATE DATABASE `treinamento` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
 USE treinamento;
@@ -487,14 +487,14 @@ Pronto, agora no cmd posicionado na pasta raiz do projeto execute os comandos:
 
 ## 📄 Startando a API e testando as rotas
 Yarn ou npm i instala os pacotes contidos no arquivo package.json
-```
+```javascript
 yarn
 ou
 npm i
 ```
 
 Para iniciar a aplicação execute:
-```
+```javascript
 yarn start
 ou 
 npm run start
@@ -506,7 +506,7 @@ Se não ocorrer erro o resultado apresentado no cmd será:
 Podemos testar a chamada de uma requisição com o Postman da seguinte forma:
 
 OBS: Insira um registro de usuário na tabela do banco de dados para testar a rota /login
-```
+```javascript
 USE treinamento;
 
 INSERT INTO `treinamento`.`usuario` (`nome`, `senha`, `email`) VALUES ('Eder Ferraz Caciano', '123', 'eder@hotmail.com');
@@ -530,7 +530,7 @@ Para enviar dados nas rotas POST ou PUT deve ser informado no body da requisiç�
 As rotas disponíveis na nossa api são:
 
 
-```
+```javascript
 // Login
 POST http://localhost:5000/login
 {
