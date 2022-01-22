@@ -66,7 +66,7 @@ O Arquivo index.js na raiz do projeto ao lado de package.json é o ponto de part
 
 o Conteúdo do index.js deve ser:
 
-```
+```javascript
   // Importação de pacotes
   require('dotenv').config()
   const express = require('express')
@@ -107,7 +107,7 @@ Podemos ver que logo no inicio tem a declaração de diversas variáveis receben
 Controlador de dependências package.json
 Substitua o arquivo package.json pelo seguinte: 
 
-```
+```javascript
 {
   "name": "api",
   "version": "1.0.0",
@@ -180,7 +180,7 @@ Lista de pacotes:
 <h1 align="center">Implementação do controller</h1>
 Na pasta /src/controller criar um arquivo chamado produto.js uma vez que será desenvolvido um cadastro de produto como exemplo:
 
-```
+```javascript
   // Importamos o pacote validate.js para validar campos obrigatórios de preenchimento
   const validate = require('validate.js')
 
