@@ -381,10 +381,5 @@ Feito com ♥ by Rocketseat 👋🏻 &nbsp;[Participe da nossa comunidade!](http
 
 ## 🔗 Links uteis
 
-Github da Rocketseat: https://github.com/rocketseat-education/nlw-heat-node/blob/master/public/index.html
-
-Material complementar: https://efficient-sloth-d85.notion.site/NLW-Heat-daaa092e1eeb42ff929151d2807c8231
-
-Cronograma da Aula: https://danileao.notion.site/NLW-Heat-96310f3f752b472597ee5fd87b02996d
-
+Documentacao: https://eder-ferraz-caciano.atlassian.net/wiki/spaces/~775927082/blog/2021/12/29/33020/Aplica+es+web+com+API+Rest+Java+Script+e+Front+End+Vue.Js
 
