@@ -56,7 +56,7 @@ module.exports = app => {
       // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
       const err = validate(req.body, validateEditar)
       // Caso não retorna uma menssagem de erro
-      if (err) return res.json(err)
+      if (err) return res.json({ erro: err })
 
       // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
       const findOne = await app.db('produto')
@@ -85,15 +85,15 @@ module.exports = app => {
   const salvar = async (req, res) => {
     try {
       const err = validate(req.body, validateSalvar)
-      if (err) return res.json(err)
-
+      if (err) return res.json({ erro: err })
+      
       await app.db('produto')
         .insert({
           descricao: req.body.descricao,
           quantidade: req.body.quantidade,
           valor: req.body.valor
         })
-
+  
       return res.json({ message: 'Inserido' })
     } catch (error) {
       return res.json({ erro: error.message })
@@ -104,7 +104,7 @@ module.exports = app => {
     try {
       const findOne = await app.db('produto')
         .where({
-          id: req.body.id
+          id: req.params.id
         })
         if (!findOne.length) throw new Error('Produto não encontrado')
 

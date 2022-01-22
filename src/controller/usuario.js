@@ -35,7 +35,7 @@ module.exports = app => {
   // Função exibir é assincrona e recebe a requisição e retorna uma resposta
   const exibir = async (req, res) => {
     try {
-      // A diferença é que nesse caso deve retornar um produto caso o id seja correspondente ao informado na requisição.
+      // A diferença é que nesse caso deve retornar um usuario caso o id seja correspondente ao informado na requisição.
       const resp = await app.db('usuario')
       .where({
         id: req.params.id
@@ -56,9 +56,9 @@ module.exports = app => {
       // Valida com a variavel validate se todos os campos obrigatórios foram passados no req.body
       const err = validate(req.body, validateEditar)
       // Caso não retorna uma menssagem de erro
-      if (err) return res.json(err)
+      if (err) return res.json({ erro: err })
 
-      // Ao tentar editar um produto. Verifica se o mesmo existe na base de dados
+      // Ao tentar editar um usuario. Verifica se o mesmo existe na base de dados
       const findOne = await app.db('usuario')
       .where({
         id: req.body.id
@@ -85,7 +85,7 @@ module.exports = app => {
   const salvar = async (req, res) => {
     try {
       const err = validate(req.body, validateSalvar)
-      if (err) return res.json(err)
+      if (err) return res.json({ erro: err })
 
       await app.db('usuario')
         .insert({
@@ -104,7 +104,7 @@ module.exports = app => {
     try {
       const findOne = await app.db('usuario')
         .where({
-          id: req.body.id
+          id: req.params.id
         })
         if (!findOne.length) throw new Error('Usuario não encontrado')
 

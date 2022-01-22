@@ -17,4 +17,10 @@ module.exports = app => {
   app.post('/produto', app.src.controller.produto.salvar)
   app.delete('/produto/:id', app.src.controller.produto.deletar)
 
+  app.get('/usuario', app.src.controller.usuario.listar)
+  app.get('/usuario/:id', app.src.controller.usuario.exibir)
+  app.put('/usuario', app.src.controller.usuario.editar)
+  app.post('/usuario', app.src.controller.usuario.salvar)
+  app.delete('/usuario/:id', app.src.controller.usuario.deletar)
+
 }
