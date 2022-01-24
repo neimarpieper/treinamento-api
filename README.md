@@ -59,6 +59,7 @@ Onde:
 OBS: A estrutura de pastas deverá ser criada manualmente. Inclusive os arquivos index.js e .env.
 
 Ao final do projeto teremos uma pasta como na imagem:
+
 ![image](https://user-images.githubusercontent.com/22473595/150638091-0c3e8d49-0577-4c9d-b7fd-b5008e3f0c4f.png)
 
 
